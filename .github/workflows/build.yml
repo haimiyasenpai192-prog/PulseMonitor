@@ -1,4 +1,4 @@
-name: Build APK
+name: Build release APK
 on:
   push:
   workflow_dispatch:
@@ -15,9 +15,14 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: 8.9
-      - run: gradle :app:assembleDebug --no-daemon
+      - run: gradle :app:assembleRelease --no-daemon --stacktrace
         working-directory: PulseMonitor
       - uses: actions/upload-artifact@v4
         with:
-          name: PulseMonitor-debug
-          path: PulseMonitor/app/build/outputs/apk/debug/*.apk
+          name: PulseMonitor-release
+          path: PulseMonitor/app/build/outputs/apk/release/*.apk
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: build-reports
+          path: PulseMonitor/app/build/reports
